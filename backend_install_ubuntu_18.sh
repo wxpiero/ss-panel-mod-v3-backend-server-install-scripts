@@ -6,9 +6,11 @@ cat << "EOF"
 | | /| / /__ _/ / / /  (_)__  / /__
 | |/ |/ / _ `/ / / /__/ / _ \/  '_/
 |__/|__/\_,_/_/_/____/_/_//_/_/\_\ 
-                                  
+
+Author: YihanH
+Github: https://github.com/YihanH/ss-panel-mod-v3-backend-server-install-scripts                                
 EOF
-echo "Proxy node server installation script for Ubuntu 18.04 x64"
+echo "Proxy node installation script for Ubuntu 18.04 x64"
 [ $(id -u) != "0" ] && { echo "${CFAILURE}Error: You must be root to run this script${CEND}"; exit 1; }
 echo "Press Y for continue the installation process, or press any key else to exit."
 read is_install
@@ -21,8 +23,8 @@ echo "Updatin exsit package..."
 apt clean all && apt autoremove -y && apt update && apt upgrade -y && apt dist-upgrade -y
 echo "Install necessary package..."
 apt install git python-setuptools python-pip build-essential ntpdate htop -y
-echo "Setting system timezone..."
-cp -f /usr/share/zoneinfo/Asia/Taipei /etc/localtime && ntpdate us.pool.ntp.org
+echo "Please select correct system timezone for your node."
+dpkg-reconfigure tzdata
 echo "Installing libsodium..."
 wget https://github.com/jedisct1/libsodium/releases/download/1.0.16/libsodium-1.0.16.tar.gz
 tar xf libsodium-1.0.16.tar.gz && cd libsodium-1.0.16
