@@ -42,7 +42,7 @@ echo "Generating config file..."
 cp apiconfig.py userapiconfig.py
 cp config.json user-config.json
 sed -i -e "s/'modwebapi'/'glzjinmod'/g" userapiconfig.py
-echo -n "Please enter database server's IP address:"
+echo -n "Please enter DB server's IP address:"
 read db_ip
 echo -n "DB name:"
 read db_name
