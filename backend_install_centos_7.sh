@@ -56,18 +56,16 @@ while :; do echo
 		break
 	fi			
 done
-if [ "${connection_method}" == '1' ]; then
-	while :; do echo
-		echo -n "Do you want to enable multi user in single port feature?(Y/N)"
-		read is_mu
-		if [[ "${is_mu}" =~ ^[Y,y,N,n]$ ]]
-		then
-			echo -n "Bad answer! Please only input number Y or N"
-		else
-			break
-		fi
-	done
-fi
+while :; do echo
+	echo -n "Do you want to enable multi user in single port feature?(Y/N)"
+	read is_mu
+	if [[ "${is_mu}" =~ ^[Y,y,N,n]$ ]]
+	then
+		echo -n "Bad answer! Please only input number Y or N"
+	else
+		break
+	fi
+done
 do_modwebapi(){
 	echo -n "Please enter WebAPI url:"
 	read webapi_url
