@@ -35,9 +35,10 @@ echo /usr/local/lib > /etc/ld.so.conf.d/usr_local_lib.conf
 ldconfig
 cd ../ && rm -rf libsodium*
 echo "Installing Shadowsocksr server from GitHub..."
-mkdir /soft && cd /soft
+mkdir /soft
+cd /soft
 git clone -b manyuser https://github.com/esdeathlove/shadowsocks.git
-cd shadowsocks
+cd /soft/shadowsocks
 pip install --upgrade pip
 pip install -r requirements.txt
 echo "Generating config file..."
