@@ -47,9 +47,9 @@ while :; do echo
 	echo -e "\t1. WebAPI"
 	echo -e "\t2. Remote Database"
 	read -p "Please input a number:(Default 2 press Enter) " connection_method
-	[ -z "${connection_method}" ] && connection_method=2
-	if [[ ! "${connection_method}" =~ ^[1-2]$ ]]; then
-		echo "${CWARNING}input error! Please only input number 1~2${CEND}"
+	[ -z ${connection_method} ] && connection_method=2
+	if [[ ! ${connection_method} =~ ^[1-2]$ ]]; then
+		echo "Bad answer! Please only input number 1~2"
 	else
 		break
 	fi			
@@ -58,9 +58,9 @@ if [ "${connection_method}" == '1' ]; then
 	while :; do echo
 		echo -n "Do you want to enable multi user in single port feature?(Y/N)"
 		read is_mu
-		if [[ "${is_mu}" =~ ^[Y,y,N,n]$ ]]
+		if [[ ${is_mu} =~ ^[Y,y,N,n]$ ]]
 		then
-			echo -n "Bad answer!"
+			echo -n "Bad answer! Please only input number Y or N"
 		else
 			break
 		fi
@@ -73,7 +73,7 @@ do_modwebapi(){
 	read webapi_token
 	echo -n "Server node ID:"
 	read node_id
-	if [ "${is_mu}"== ^[Y,y]$ ]]; then
+	if [ ${is_mu} == ^[Y,y]$ ]]; then
 		echo -n "Please enter MU_SUFFIX:"
 		read mu_suffix
 		echo -n "Please enter MU_REGEX:"
@@ -82,7 +82,8 @@ do_modwebapi(){
 		sed -i -e "s/MU_SUFFIX = 'zhaoj.in'/MU_SUFFIX = '${mu_suffix}'/g" -e "s/MU_REGEX = 'zhaoj.in'/MU_REGEX = '${mu_regex}'/g" userapiconfig.py
 	fi
 	echo "Writting connection config..."
-	sed -i -e "s/NODE_ID = 1/NODE_ID = ${node_id}/g" -e "s/WEBAPI_URL = 'https://zhaoj.in'/WEBAPI_URL = '${webapi_url}'/g" -e "s/WEBAPI_TOKEN = 'glzjin'/WEBAPI_TOKEN = '${webapi_token}'/g"  userapiconfig.py
+	sed -i -e "s/NODE_ID = 1/NODE_ID = ${node_id}/g" -e %s/WEBAPI_URL = 'https://zhaoj.in'%WEBAPI_URL = '${webapi_url}'%g" -e "s/WEBAPI_TOKEN = 'glzjin'/WEBAPI_TOKEN = '${webapi_token}'/g" userapiconfig.py
+}
 do_glzjinmod(){
 	sed -i -e "s/'modwebapi'/'glzjinmod'/g" userapiconfig.py
 	echo -n "Please enter DB server's IP address:"
