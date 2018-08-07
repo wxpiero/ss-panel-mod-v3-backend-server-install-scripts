@@ -43,7 +43,7 @@ cp apiconfig.py userapiconfig.py
 cp config.json user-config.json
 #Choose the connection method
 while :; do echo
-	echo -n "Please select the way your node server connection method:"
+	echo -e "Please select the way your node server connection method:"
 	echo -e "\t1. WebAPI"
 	echo -e "\t2. Remote Database"
 	read -p "Please input a number:(Default 2 press Enter) " connection_method
