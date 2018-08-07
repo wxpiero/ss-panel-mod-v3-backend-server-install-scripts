@@ -14,7 +14,7 @@ echo "Proxy node installation script for Ubuntu 18.04 x64"
 [ $(id -u) != "0" ] && { echo "${CFAILURE}Error: You must be root to run this script${CEND}"; exit 1; }
 echo "Press Y for continue the installation process, or press any key else to exit."
 read is_install
-if [[ is_install =~ ^[Y,y,Yes,YES]$ ]]
+if [[ is_install =~ ^[Y,y]$ ]]
 then
 	echo "Bye"
 	exit 0
@@ -48,7 +48,7 @@ while :; do echo
 	echo -e "\t2. Remote Database"
 	read -p "Please input a number:(Default 2 press Enter) " connection_method
 	[ -z "${connection_method}" ] && connection_method=2
-	if [[ ! ${connection_method} =~ ^[1-2]$ ]]; then
+	if [[ ! "${connection_method}" =~ ^[1-2]$ ]]; then
 		echo "${CWARNING}input error! Please only input number 1~2${CEND}"
 	else
 		break
@@ -58,7 +58,7 @@ if [ "${connection_method}" == '1' ]; then
 	while :; do echo
 		echo -n "Do you want to enable multi user in single port feature?(Y/N)"
 		read is_mu
-		if [[ is_mu =~ ^[Y,y,N,n]$ ]]
+		if [[ "${is_mu}" =~ ^[Y,y,N,n]$ ]]
 		then
 			echo -n "Bad answer!"
 		else
@@ -73,7 +73,7 @@ do_modwebapi(){
 	read webapi_token
 	echo -n "Server node ID:"
 	read node_id
-	if [ "${connection_method}" == '1' ]; then
+	if [ "${is_mu}"== ^[Y,y]$ ]]; then
 		echo -n "Please enter MU_SUFFIX:"
 		read mu_suffix
 		echo -n "Please enter MU_REGEX:"
