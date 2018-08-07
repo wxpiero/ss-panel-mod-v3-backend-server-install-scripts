@@ -60,7 +60,7 @@ done
 while :; do echo
 	echo -n "Do you want to enable multi user in single port feature?(Y/N)"
 	read is_mu
-	if [[ "${is_mu}" =~ ^[Y,y,N,n]$ ]]
+	if [[ is_mu =~ ^[Y,y,N,n]$ ]]
 	then
 		echo -n "Bad answer! Please only input number Y or N"
 	else
