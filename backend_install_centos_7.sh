@@ -74,7 +74,7 @@ do_modwebapi(){
 	read webapi_token
 	echo -n "Server node ID:"
 	read node_id
-	if [ "${is_mu}" == ^[Y,y]$ ]]; then
+	if [ is_mu == ^[Y,y]$ ]]; then
 		echo -n "Please enter MU_SUFFIX:"
 		read mu_suffix
 		echo -n "Please enter MU_REGEX:"
