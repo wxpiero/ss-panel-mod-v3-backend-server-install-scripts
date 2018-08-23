@@ -12,17 +12,10 @@ echo "Proxy node server installation script for CentOS 7 x64"
 [ $(id -u) != "0" ] && { echo "${CFAILURE}Error: You must be root to run this script${CEND}"; exit 1; }
 echo "Press Y for continue the installation process, or press any key else to exit."
 read is_install
-<<<<<<< HEAD
-if [[ ${is_install} != "y" || ${is_install} != "Y" ]]; then
-then
-	echo "Bye"
-	exit 0
-=======
 if [[ ${is_install} == "y" || ${is_install} == "Y" ]]; then
 else
     echo -e "Installation has been canceled..."
     exit 0
->>>>>>> 4986993e36ea7802e5092be37b382614aea68595
 fi
 echo "Updatin exsit package..."
 yum clean all && rm -rf /var/cache/yum && yum update -y
