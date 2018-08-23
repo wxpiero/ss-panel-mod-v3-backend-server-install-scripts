@@ -12,7 +12,7 @@ echo "Proxy node server installation script for CentOS 7 x64"
 [ $(id -u) != "0" ] && { echo "${CFAILURE}Error: You must be root to run this script${CEND}"; exit 1; }
 echo "Press Y for continue the installation process, or press any key else to exit."
 read is_install
-if [[ "${is_install}" != "y" || "${is_install}" != "Y" ]]; then
+if [[ ${is_install} != "y" && ${is_install} != "Y" ]]; then
     echo -e "Installation has been canceled..."
     exit 0
 fi
@@ -59,7 +59,7 @@ done
 while :; do echo
 	echo -n "Do you want to enable multi user in single port feature?(Y/N)"
 	read is_mu
-	if [[ "${is_mu}" != "y" || "${is_mu}" != "Y" || "${is_mu}" != "N" || "${is_mu}" != "n" ]]; then
+	if [[ ${is_mu} != "y" && ${is_mu} != "Y" && ${is_mu} != "N" && ${is_mu} != "n" ]]; then
 	then
 		echo -n "Bad answer! Please only input number Y or N"
 	else
@@ -81,7 +81,7 @@ do_modwebapi(){
 	read webapi_token
 	echo -n "Server node ID:"
 	read node_id
-	if [[ "${is_mu}" == "y" || "${is_mu}" == "Y" ]]; then
+	if [[ ${is_mu} == "y" || ${is_mu} == "Y" ]]; then
 		do_mu
 	fi
 	echo "Writting connection config..."
@@ -99,7 +99,7 @@ do_glzjinmod(){
 	read db_password
 	echo -n "Server node ID:"
 	read node_id
-	if [[ "${is_mu}" == "y" || "${is_mu}" == "Y" ]]; then
+	if [[ ${is_mu} == "y" || ${is_mu} == "Y" ]]; then
 		do_mu
 	fi
 	echo "Writting connection config..."
@@ -146,7 +146,7 @@ EOF
 sysctl -p
 echo "System require a reboot to complete the installation process, press Y to continue, or press any key else to exit this script."
 read is_reboot
-if [[ "${is_reboot}" == "y" || "${is_reboot}" == "Y" ]]; then
+if [[ ${is_reboot} == "y" || ${is_reboot} == "Y" ]]; then
     reboot
 else
     echo -e "Reboot has been canceled..."
