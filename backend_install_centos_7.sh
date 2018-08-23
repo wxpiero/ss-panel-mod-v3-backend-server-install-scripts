@@ -12,10 +12,10 @@ echo "Proxy node server installation script for CentOS 7 x64"
 [ $(id -u) != "0" ] && { echo "${CFAILURE}Error: You must be root to run this script${CEND}"; exit 1; }
 echo "Press Y for continue the installation process, or press any key else to exit."
 read is_install
-if [[ is_install =~ ^[Y,y,Yes,YES]$ ]]
-then
-	echo "Bye"
-	exit 0
+if [[ ${is_install} == "y" || ${is_install} == "Y" ]]; then
+else
+    echo -e "Installation has been canceled..."
+    exit 0
 fi
 echo "Updatin exsit package..."
 yum clean all && rm -rf /var/cache/yum && yum update -y
@@ -67,6 +67,14 @@ while :; do echo
 		break
 	fi
 done
+do_mu(){
+	echo -n "Please enter MU_SUFFIX:"
+	read mu_suffix
+	echo -n "Please enter MU_REGEX:"
+	read mu_regex
+	echo "Writting MU config..."
+	sed -i -e "s/MU_SUFFIX = 'zhaoj.in'/MU_SUFFIX = '${mu_suffix}'/g" -e "s/MU_REGEX = 'zhaoj.in'/MU_REGEX = '${mu_regex}'/g" userapiconfig.py
+}
 do_modwebapi(){
 	echo -n "Please enter WebAPI url:"
 	read webapi_url
@@ -74,13 +82,8 @@ do_modwebapi(){
 	read webapi_token
 	echo -n "Server node ID:"
 	read node_id
-	if [ is_mu == ^[Y,y]$ ]]; then
-		echo -n "Please enter MU_SUFFIX:"
-		read mu_suffix
-		echo -n "Please enter MU_REGEX:"
-		read mu_regex
-		echo "Writting MU config..."
-		sed -i -e "s/MU_SUFFIX = 'zhaoj.in'/MU_SUFFIX = '${mu_suffix}'/g" -e "s/MU_REGEX = 'zhaoj.in'/MU_REGEX = '${mu_regex}'/g" userapiconfig.py
+	if [[ ${is_mu} == "y" || ${is_mu} == "Y" ]]; then
+		do_mu
 	fi
 	echo "Writting connection config..."
 	sed -i -e "s/NODE_ID = 1/NODE_ID = ${node_id}/g" -e "s%WEBAPI_URL = 'https://zhaoj.in'%WEBAPI_URL = '${webapi_url}'%g" -e "s/WEBAPI_TOKEN = 'glzjin'/WEBAPI_TOKEN = '${webapi_token}'/g" userapiconfig.py
@@ -97,13 +100,16 @@ do_glzjinmod(){
 	read db_password
 	echo -n "Server node ID:"
 	read node_id
+	if [[ ${is_mu} == "y" || ${is_mu} == "Y" ]]; then
+		do_mu
+	fi
 	echo "Writting connection config..."
 	sed -i -e "s/NODE_ID = 1/NODE_ID = ${node_id}/g" -e "s/MYSQL_HOST = '127.0.0.1'/MYSQL_HOST = '${db_ip}'/g" -e "s/MYSQL_USER = 'ss'/MYSQL_USER = '${db_user}'/g" -e "s/MYSQL_PASS = 'ss'/MYSQL_PASS = '${db_password}'/g" -e "s/MYSQL_DB = 'shadowsocks'/MYSQL_DB = '${db_name}'/g" userapiconfig.py
 }
 #Do the configuration
-if [ "${connection_method}" == '1' ]; then
+if [ "${connection_method}" == "1" ]; then
 	do_modwebapi
-elif [ "${connection_method}" == '2' ]; then
+elif [ "${connection_method}" == "2" ]; then
 	do_glzjinmod
 fi
 echo "Running system optimization and enable Google BBR..."
@@ -144,6 +150,6 @@ read is_reboot
 if [[ ${is_reboot} == "y" || ${is_reboot} == "Y" ]]; then
     reboot
 else
-    echo -e "${green}Info:${plain} Reboot has been canceled..."
+    echo -e "Reboot has been canceled..."
     exit 0
 fi
