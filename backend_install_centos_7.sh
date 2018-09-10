@@ -94,7 +94,7 @@ echo "Checking if there any exist Shadowsocksr server software..."
 if [ ! -d "shadowsocks" ]; then
 	echo "Installing Shadowsocksr server from GitHub..."
 	cd /tmp && git clone -b manyuser https://github.com/esdeathlove/shadowsocks.git
-	mv -rf shadowsocks /soft
+	mv -f shadowsocks /soft
 else
 	while :; do echo
 		echo -n "The Shadowsocksr server software is already exsit! Do you want to upgrade it?(Y/N)"
