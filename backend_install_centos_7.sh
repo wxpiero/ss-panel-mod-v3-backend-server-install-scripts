@@ -6,7 +6,9 @@ cat << "EOF"
 | | /| / /__ _/ / / /  (_)__  / /__
 | |/ |/ / _ `/ / / /__/ / _ \/  '_/
 |__/|__/\_,_/_/_/____/_/_//_/_/\_\ 
-                                  
+
+Author: YihanH
+Github: https://github.com/YihanH/ss-panel-mod-v3-backend-server-install-scripts                                  
 EOF
 echo "Proxy node server installation script for CentOS 7 x64"
 [ $(id -u) != "0" ] && { echo "${CFAILURE}Error: You must be root to run this script${CEND}"; exit 1; }
@@ -33,10 +35,32 @@ tar xf libsodium-1.0.16.tar.gz && cd libsodium-1.0.16
 echo /usr/local/lib > /etc/ld.so.conf.d/usr_local_lib.conf
 ldconfig
 cd ../ && rm -rf libsodium*
-echo "Installing Shadowsocksr server from GitHub..."
-mkdir /soft
+if [ ! -d "/soft" ]; then
+	mkdir /soft
+else
+	echo "/soft directory is already exist..."
+fi
 cd /soft
-git clone -b manyuser https://github.com/esdeathlove/shadowsocks.git
+echo "Checking if there any exist Shadowsocksr server software..."
+if [ ! -d "shadowsocks" ]; then
+	echo "Installing Shadowsocksr server from GitHub..."
+	cd /tmp && git clone -b manyuser https://github.com/esdeathlove/shadowsocks.git
+	mv -rf shadowsocks /soft
+else
+	while :; do echo
+		echo -n "The Shadowsocksr server software is already exsit! Do you want to upgrade it?(Y/N)"
+		read is_mu
+		if [[ ${is_mu} != "y" && ${is_mu} != "Y" && ${is_mu} != "N" && ${is_mu} != "n" ]]; then
+			echo -n "Bad answer! Please only input number Y or N"
+		elif [[ ${is_mu} == "y" && ${is_mu} == "Y" ]]; then
+			echo "Upgrading Shadowsocksr server software..."
+			cd shadowsocks && git pull
+			break
+		else
+			exit 0
+		fi
+	done
+fi
 cd /soft/shadowsocks
 pip install --upgrade pip
 pip install -r requirements.txt
@@ -66,17 +90,17 @@ while :; do echo
 	fi
 done
 do_mu(){
-	echo -n "Please enter MU_SUFFIX:"
+	echo -n "Please input MU_SUFFIX:"
 	read mu_suffix
-	echo -n "Please enter MU_REGEX:"
+	echo -n "Please input MU_REGEX:"
 	read mu_regex
 	echo "Writting MU config..."
 	sed -i -e "s/MU_SUFFIX = 'zhaoj.in'/MU_SUFFIX = '${mu_suffix}'/g" -e "s/MU_REGEX = 'zhaoj.in'/MU_REGEX = '${mu_regex}'/g" userapiconfig.py
 }
 do_modwebapi(){
-	echo -n "Please enter WebAPI url:"
+	echo -n "Please input WebAPI url:"
 	read webapi_url
-	echo -n "Please enter WebAPI token:"
+	echo -n "Please input WebAPI token:"
 	read webapi_token
 	echo -n "Server node ID:"
 	read node_id
@@ -88,7 +112,7 @@ do_modwebapi(){
 }
 do_glzjinmod(){
 	sed -i -e "s/'modwebapi'/'glzjinmod'/g" userapiconfig.py
-	echo -n "Please enter DB server's IP address:"
+	echo -n "Please input DB server's IP address:"
 	read db_ip
 	echo -n "DB name:"
 	read db_name
@@ -96,7 +120,7 @@ do_glzjinmod(){
 	read db_user
 	echo -n "DB password:"
 	read db_password
-	echo -n "Server node ID:"
+	echo -n "Please input Server node ID:"
 	read node_id
 	if [[ ${is_mu} == "y" || ${is_mu} == "Y" ]]; then
 		do_mu

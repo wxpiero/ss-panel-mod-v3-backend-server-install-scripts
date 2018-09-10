@@ -31,10 +31,32 @@ tar xf libsodium-1.0.16.tar.gz && cd libsodium-1.0.16
 echo /usr/local/lib > /etc/ld.so.conf.d/usr_local_lib.conf
 ldconfig
 cd ../ && rm -rf libsodium*
-echo "Installing Shadowsocksr server from GitHub..."
-mkdir /soft
-cd /tmp && git clone -b manyuser https://github.com/esdeathlove/shadowsocks.git
-mv -f shadowsocks /soft
+if [ ! -d "/soft" ]; then
+	mkdir /soft
+else
+	echo "/soft directory is already exist..."
+fi
+cd /soft
+echo "Checking if there any exist Shadowsocksr server software..."
+if [ ! -d "shadowsocks" ]; then
+	echo "Installing Shadowsocksr server from GitHub..."
+	cd /tmp && git clone -b manyuser https://github.com/esdeathlove/shadowsocks.git
+	mv -rf shadowsocks /soft
+else
+	while :; do echo
+		echo -n "The Shadowsocksr server software is already exsit! Do you want to upgrade it?(Y/N)"
+		read is_mu
+		if [[ ${is_mu} != "y" && ${is_mu} != "Y" && ${is_mu} != "N" && ${is_mu} != "n" ]]; then
+			echo -n "Bad answer! Please only input number Y or N"
+		elif [[ ${is_mu} == "y" && ${is_mu} == "Y" ]]; then
+			echo "Upgrading Shadowsocksr server software..."
+			cd shadowsocks && git pull
+			break
+		else
+			exit 0
+		fi
+	done
+fi
 cd /soft/shadowsocks
 python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
