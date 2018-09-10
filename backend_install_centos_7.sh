@@ -11,12 +11,61 @@ Author: YihanH
 Github: https://github.com/YihanH/ss-panel-mod-v3-backend-server-install-scripts                                  
 EOF
 echo "Proxy node server installation script for CentOS 7 x64"
-[ $(id -u) != "0" ] && { echo "${CFAILURE}Error: You must be root to run this script${CEND}"; exit 1; }
-echo "Press Y for continue the installation process, or press any key else to exit."
-read is_install
-if [[ ${is_install} != "y" && ${is_install} != "Y" ]]; then
-    echo -e "Installation has been canceled..."
-    exit 0
+[ $(id -u) != "0" ] && { echo "Error: You must be root to run this script"; exit 1; }
+ARG_NUM=$#
+TEMP=`getopt -o hvV --long is_auto:,connection_method:,is_mu:,webapi_url:,webapi_token:,db_ip:,db_name:,db_user:,db_password:,node_id:-- "$@" 2>/dev/null`
+[ $? != 0 ] && echo "ERROR: unknown argument!" && exit 1
+eval set -- "${TEMP}"
+while :; do
+  [ -z "$1" ] && break;
+  case "$1" in
+	--is_auto)
+      is_auto=y; shift 1
+      [ -d "/soft/shadowsocks" ] && { echo "Shadowsocksr server software is already exist"; exit 1; }
+      ;;
+    --connection_method)
+      connection_method=$2; shift 2
+      [[ ! ${connection_method} =~ ^[1-2]$ ]] && { echo "Bad answer! Please only input number 1~2"; exit 1; }
+      ;;
+    --is_mu)
+      is_mu=y; shift 1
+      ;;
+    --webapi_url)
+      webapi_url=$2; shift 2
+      ;;
+    --webapi_token)
+      webapi_token=$2; shift 2
+      ;;
+    --db_ip)
+      db_ip=$2; shift 2
+      ;;
+    --db_name)
+      db_name=$2; shift 2
+      ;;
+    --db_user)
+      db_user=$2; shift 2
+      ;;
+    --db_password)
+      db_password=$2; shift 2
+      ;;
+    --node_id)
+      node_id=$2; shift 2
+      ;;
+    --)
+      shift
+      ;;
+    *)
+      echo "ERROR: unknown argument!" && exit 1
+      ;;
+  esac
+done
+if [[ ${is_auto} != "y" ]]; then
+	echo "Press Y for continue the installation process, or press any key else to exit."
+	read is_install
+	if [[ ${is_install} != "y" && ${is_install} != "Y" ]]; then
+    	echo -e "Installation has been canceled..."
+    	exit 0
+	fi
 fi
 echo "Updatin exsit package..."
 yum clean all && rm -rf /var/cache/yum && yum update -y
@@ -67,43 +116,49 @@ pip install -r requirements.txt
 echo "Generating config file..."
 cp apiconfig.py userapiconfig.py
 cp config.json user-config.json
-#Choose the connection method
-while :; do echo
-	echo -e "Please select the way your node server connection method:"
-	echo -e "\t1. WebAPI"
-	echo -e "\t2. Remote Database"
-	read -p "Please input a number:(Default 2 press Enter) " connection_method
-	[ -z "${connection_method}" ] && connection_method=2
-	if [[ ! "${connection_method}" =~ ^[1-2]$ ]]; then
-		echo "Bad answer! Please only input number 1~2"
-	else
-		break
-	fi			
-done
-while :; do echo
-	echo -n "Do you want to enable multi user in single port feature?(Y/N)"
-	read is_mu
-	if [[ ${is_mu} != "y" && ${is_mu} != "Y" && ${is_mu} != "N" && ${is_mu} != "n" ]]; then
-		echo -n "Bad answer! Please only input number Y or N"
-	else
-		break
-	fi
-done
+if [[ ${is_auto} != "y" ]]; then
+	#Choose the connection method
+	while :; do echo
+		echo -e "Please select the way your node server connection method:"
+		echo -e "\t1. WebAPI"
+		echo -e "\t2. Remote Database"
+		read -p "Please input a number:(Default 2 press Enter) " connection_method
+		[ -z ${connection_method} ] && connection_method=2
+		if [[ ! ${connection_method} =~ ^[1-2]$ ]]; then
+			echo "Bad answer! Please only input number 1~2"
+		else
+			break
+		fi			
+	done
+	while :; do echo
+		echo -n "Do you want to enable multi user in single port feature?(Y/N)"
+		read is_mu
+		if [[ ${is_mu} != "y" && ${is_mu} != "Y" && ${is_mu} != "N" && ${is_mu} != "n" ]]; then
+			echo -n "Bad answer! Please only input number Y or N"
+		else
+			break
+		fi
+	done
+fi
 do_mu(){
-	echo -n "Please input MU_SUFFIX:"
-	read mu_suffix
-	echo -n "Please input MU_REGEX:"
-	read mu_regex
-	echo "Writting MU config..."
+	if [[ ${is_auto} != "y" ]]; then
+		echo -n "Please enter MU_SUFFIX:"
+		read mu_suffix
+		echo -n "Please enter MU_REGEX:"
+		read mu_regex
+		echo "Writting MU config..."
+	fi
 	sed -i -e "s/MU_SUFFIX = 'zhaoj.in'/MU_SUFFIX = '${mu_suffix}'/g" -e "s/MU_REGEX = 'zhaoj.in'/MU_REGEX = '${mu_regex}'/g" userapiconfig.py
 }
 do_modwebapi(){
-	echo -n "Please input WebAPI url:"
-	read webapi_url
-	echo -n "Please input WebAPI token:"
-	read webapi_token
-	echo -n "Server node ID:"
-	read node_id
+	if [[ ${is_auto} != "y" ]]; then
+		echo -n "Please enter WebAPI url:"
+		read webapi_url
+		echo -n "Please enter WebAPI token:"
+		read webapi_token
+		echo -n "Server node ID:"
+		read node_id
+	fi
 	if [[ ${is_mu} == "y" || ${is_mu} == "Y" ]]; then
 		do_mu
 	fi
@@ -111,30 +166,34 @@ do_modwebapi(){
 	sed -i -e "s/NODE_ID = 1/NODE_ID = ${node_id}/g" -e "s%WEBAPI_URL = 'https://zhaoj.in'%WEBAPI_URL = '${webapi_url}'%g" -e "s/WEBAPI_TOKEN = 'glzjin'/WEBAPI_TOKEN = '${webapi_token}'/g" userapiconfig.py
 }
 do_glzjinmod(){
-	sed -i -e "s/'modwebapi'/'glzjinmod'/g" userapiconfig.py
-	echo -n "Please input DB server's IP address:"
-	read db_ip
-	echo -n "DB name:"
-	read db_name
-	echo -n "DB username:"
-	read db_user
-	echo -n "DB password:"
-	read db_password
-	echo -n "Please input Server node ID:"
-	read node_id
+	if [[ ${is_auto} != "y" ]]; then
+		sed -i -e "s/'modwebapi'/'glzjinmod'/g" userapiconfig.py
+		echo -n "Please enter DB server's IP address:"
+		read db_ip
+		echo -n "DB name:"
+		read db_name
+		echo -n "DB username:"
+		read db_user
+		echo -n "DB password:"
+		read db_password
+		echo -n "Server node ID:"
+		read node_id
+	fi
 	if [[ ${is_mu} == "y" || ${is_mu} == "Y" ]]; then
 		do_mu
 	fi
 	echo "Writting connection config..."
 	sed -i -e "s/NODE_ID = 1/NODE_ID = ${node_id}/g" -e "s/MYSQL_HOST = '127.0.0.1'/MYSQL_HOST = '${db_ip}'/g" -e "s/MYSQL_USER = 'ss'/MYSQL_USER = '${db_user}'/g" -e "s/MYSQL_PASS = 'ss'/MYSQL_PASS = '${db_password}'/g" -e "s/MYSQL_DB = 'shadowsocks'/MYSQL_DB = '${db_name}'/g" userapiconfig.py
 }
-#Do the configuration
-if [ "${connection_method}" == "1" ]; then
-	do_modwebapi
-elif [ "${connection_method}" == "2" ]; then
-	do_glzjinmod
+if [[ ${is_auto} != "y" ]]; then
+	#Do the configuration
+	if [ "${connection_method}" == '1' ]; then
+		do_modwebapi
+	elif [ "${connection_method}" == '2' ]; then
+		do_glzjinmod
+	fi
 fi
-echo "Running system optimization and enable Google BBR..."
+echo "Running system optimization and enable BBR..."
 rpm --import https://www.elrepo.org/RPM-GPG-KEY-elrepo.org
 rpm -Uvh http://www.elrepo.org/elrepo-release-7.0-3.el7.elrepo.noarch.rpm
 yum remove kernel-headers -y
