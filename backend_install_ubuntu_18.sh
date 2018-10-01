@@ -67,10 +67,12 @@ if [[ ${is_auto} != "y" ]]; then
     	exit 0
 	fi
 fi
-echo "Updatin exsit package..."
+echo "Checking the universe repository configuration..."
+apt install software-properties-common && apt-add-repository universe
+echo "Updating exsit package..."
 apt clean all && apt autoremove -y && apt update && apt upgrade -y && apt dist-upgrade -y
-echo "Install necessary package..."
-apt install git python-setuptools python-pip build-essential ntpdate htop -y
+echo "Installing necessary package..."
+apt install git python python-setuptools python-pip build-essential ntpdate htop -y
 echo "Please select correct system timezone for your node."
 dpkg-reconfigure tzdata
 echo "Installing libsodium..."
